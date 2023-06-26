@@ -7,9 +7,15 @@
 
 import SwiftUI
 
+struct Task: Identifiable {
+    let id = UUID()
+    var title: String
+    var completed: Bool
+}
+
 struct ContentView: View {
     @State private var newTaskText = ""
-    @State private var tasks = [String]()
+    @State private var tasks = [Task]()
 
     var body: some View {
         VStack {
@@ -19,7 +25,7 @@ struct ContentView: View {
 
             Button(action: {
                 if !newTaskText.isEmpty {
-                    tasks.append(newTaskText)
+                    tasks.append(Task(title: newTaskText, completed: false))
                     newTaskText = ""
                 }
             }) {
@@ -27,8 +33,23 @@ struct ContentView: View {
             }
             .padding()
 
-            List(tasks, id: \.self) { task in
-                Text(task)
+            List {
+                ForEach(tasks) { task in
+                    HStack {
+                        Button(action: {
+                            if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+                                tasks[index].completed.toggle()
+                            }
+                        }) {
+                            Image(systemName: task.completed ? "checkmark.square" : "square")
+                                .foregroundColor(task.completed ? .green : .gray)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+
+                        Text(task.title)
+                            .strikethrough(task.completed)
+                    }
+                }
             }
         }
         .padding()
