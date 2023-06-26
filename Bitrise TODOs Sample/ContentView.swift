@@ -8,12 +8,28 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var newTaskText = ""
+    @State private var tasks = [String]()
+
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+            TextField("Enter new task", text: $newTaskText)
+                .padding()
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+
+            Button(action: {
+                if !newTaskText.isEmpty {
+                    tasks.append(newTaskText)
+                    newTaskText = ""
+                }
+            }) {
+                Text("Add Task")
+            }
+            .padding()
+
+            List(tasks, id: \.self) { task in
+                Text(task)
+            }
         }
         .padding()
     }
