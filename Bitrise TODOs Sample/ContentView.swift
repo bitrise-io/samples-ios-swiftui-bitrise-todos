@@ -33,26 +33,39 @@ struct ContentView: View {
             }
             .padding()
 
+            Text("Not Done Yet")
             List {
-                ForEach(tasks) { task in
-                    HStack {
-                        Button(action: {
-                            if let index = tasks.firstIndex(where: { $0.id == task.id }) {
-                                tasks[index].completed.toggle()
-                            }
-                        }) {
-                            Image(systemName: task.completed ? "checkmark.square" : "square")
-                                .foregroundColor(task.completed ? .green : .gray)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-
-                        Text(task.title)
-                            .strikethrough(task.completed)
-                    }
+                ForEach(tasks.filter { !$0.completed }) { task in
+                    taskRow(task: task)
+                }
+            }
+            
+            Text("Done")
+            List {
+                ForEach(tasks.filter { $0.completed }) { task in
+                    taskRow(task: task)
                 }
             }
         }
         .padding()
+    }
+    
+    @ViewBuilder
+    private func taskRow(task: Task) -> some View {
+        HStack {
+            Button(action: {
+                if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+                    tasks[index].completed.toggle()
+                }
+            }) {
+                Image(systemName: task.completed ? "checkmark.square" : "square")
+                    .foregroundColor(task.completed ? .green : .gray)
+            }
+            .buttonStyle(PlainButtonStyle())
+
+            Text(task.title)
+                .strikethrough(task.completed)
+        }
     }
 }
 
