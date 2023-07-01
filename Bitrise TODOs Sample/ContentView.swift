@@ -13,9 +13,8 @@ struct Task: Identifiable {
     var completed: Bool
 }
 
-struct ContentView: View {
-    @State private var newTaskText = ""
-    @State private var tasks: [Task]
+class Tasks: ObservableObject {
+    @Published var tasks: [Task]
     
     init() {
         tasks = [Task]()
@@ -24,7 +23,38 @@ struct ContentView: View {
     init(withTasks ts: [Task] = []){
         tasks = ts
     }
+    
+    func addTask(title: String) {
+        if !title.isEmpty {
+            tasks.append(Task(title: title, completed: false))
+        }
+    }
+    
+    func toggleTaskCompletion(task: Task) {
+        if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+            tasks[index].completed.toggle()
+        }
+    }
+    
+    func deleteTask(task: Task) {
+        if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+            tasks.remove(at: index)
+        }
+    }
+}
 
+struct ContentView: View {
+    @State private var newTaskText = ""
+    @ObservedObject private var tasks: Tasks
+    
+    init() {
+        tasks = Tasks()
+    }
+    
+    init(withTasks ts: Tasks) {
+        tasks = ts
+    }
+    
     var body: some View {
         VStack {
             TextField("Enter new task", text: $newTaskText)
@@ -32,10 +62,8 @@ struct ContentView: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
 
             Button(action: {
-                if !newTaskText.isEmpty {
-                    tasks.append(Task(title: newTaskText, completed: false))
-                    newTaskText = ""
-                }
+                tasks.addTask(title: newTaskText)
+                newTaskText = ""
             }) {
                 Text("Add Task")
             }
@@ -43,14 +71,14 @@ struct ContentView: View {
 
             Text("Not Done Yet")
             List {
-                ForEach(tasks.filter { !$0.completed }) { task in
+                ForEach(tasks.tasks.filter { !$0.completed }) { task in
                     taskRow(task: task)
                 }
             }
             
             Text("Done")
             List {
-                ForEach(tasks.filter { $0.completed }) { task in
+                ForEach(tasks.tasks.filter { $0.completed }) { task in
                     taskRow(task: task)
                 }
             }
@@ -62,9 +90,7 @@ struct ContentView: View {
     private func taskRow(task: Task) -> some View {
         HStack {
             Button(action: {
-                if let index = tasks.firstIndex(where: { $0.id == task.id }) {
-                    tasks[index].completed.toggle()
-                }
+                tasks.toggleTaskCompletion(task: task)
             }) {
                 Image(systemName: task.completed ? "checkmark.square" : "square")
                     .foregroundColor(task.completed ? .green : .gray)
@@ -77,9 +103,7 @@ struct ContentView: View {
             Spacer()
             
             Button(action: {
-                if let index = tasks.firstIndex(where: { $0.id == task.id }) {
-                    tasks.remove(at: index)
-                }
+                tasks.deleteTask(task: task)
             }) {
                 Image(systemName: "trash")
                     .foregroundColor(.red)
@@ -91,9 +115,9 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(withTasks: [
+        ContentView(withTasks: Tasks(withTasks: [
             Task(title: "Preview task 1", completed: false),
             Task(title: "Preview task 2", completed: true)
-        ])
+        ]))
     }
 }
