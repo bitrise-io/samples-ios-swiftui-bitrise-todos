@@ -15,7 +15,15 @@ struct Task: Identifiable {
 
 struct ContentView: View {
     @State private var newTaskText = ""
-    @State private var tasks = [Task]()
+    @State private var tasks: [Task]
+    
+    init() {
+        tasks = [Task]()
+    }
+    
+    init(withTasks ts: [Task] = []){
+        tasks = ts
+    }
 
     var body: some View {
         VStack {
@@ -65,12 +73,27 @@ struct ContentView: View {
 
             Text(task.title)
                 .strikethrough(task.completed)
+            
+            Spacer()
+            
+            Button(action: {
+                if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+                    tasks.remove(at: index)
+                }
+            }) {
+                Image(systemName: "trash")
+                    .foregroundColor(.red)
+            }
+            .buttonStyle(PlainButtonStyle())
         }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(withTasks: [
+            Task(title: "Preview task 1", completed: false),
+            Task(title: "Preview task 2", completed: true)
+        ])
     }
 }
