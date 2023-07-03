@@ -56,31 +56,43 @@ struct ContentView: View {
     }
     
     var body: some View {
-        VStack {
-            TextField("Enter new task", text: $newTaskText)
-                .padding()
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+        TabView {
+            VStack {
+                TextField("Enter new task", text: $newTaskText)
+                    .padding()
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
 
-            Button(action: {
-                tasks.addTask(title: newTaskText)
-                newTaskText = ""
-            }) {
-                Text("Add Task")
-            }
-            .padding()
-
-            Text("Not Done Yet")
-            List {
-                ForEach(tasks.tasks.filter { !$0.completed }) { task in
-                    taskRow(task: task)
+                Button(action: {
+                    tasks.addTask(title: newTaskText)
+                    newTaskText = ""
+                }) {
+                    Text("Add Task")
                 }
+                .padding()
+
+                Text("Not Done Yet")
+                List {
+                    ForEach(tasks.tasks.filter { !$0.completed }) { task in
+                        taskRow(task: task)
+                    }
+                }
+            }
+            .tabItem {
+                Image(systemName: "list.bullet")
+                Text("Not Done Yet")
             }
             
-            Text("Done")
-            List {
-                ForEach(tasks.tasks.filter { $0.completed }) { task in
-                    taskRow(task: task)
+            VStack {
+                Text("Done")
+                List {
+                    ForEach(tasks.tasks.filter { $0.completed }) { task in
+                        taskRow(task: task)
+                    }
                 }
+            }
+            .tabItem {
+                Image(systemName: "checkmark.square")
+                Text("Done")
             }
         }
         .padding()
@@ -117,7 +129,8 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView(withTasks: Tasks(withTasks: [
             Task(title: "Preview task 1", completed: false),
-            Task(title: "Preview task 2", completed: true)
+            Task(title: "Preview task 2", completed: true),
+            Task(title: "Preview task 3", completed: false),
         ]))
     }
 }
