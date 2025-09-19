@@ -34,7 +34,7 @@ jobs:
         run: xcodebuild -version
       - name: Analyze
         run: |
-          xcodebuild "analyze" "-project" "Bitrise TODOs Sample.xcodeproj" "-scheme" "Bitrise TODOs Sample" "CODE_SIGNING_ALLOWED=NO" "COMPILER_INDEX_STORE_ENABLE=NO"
+          ~/.bitrise-xcelerate/bin/xcodebuild "analyze" "-project" "Bitrise TODOs Sample.xcodeproj" "-scheme" "Bitrise TODOs Sample" "CODE_SIGNING_ALLOWED=NO" "COMPILER_INDEX_STORE_ENABLE=NO"
   # build:
   #   name: Build and Test default scheme using any available iPhone simulator
   #   runs-on: macos-latest
