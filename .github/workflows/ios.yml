@@ -37,6 +37,13 @@ jobs:
       - name: Analyze
         run: |
           xcodebuild "analyze" "-project" "Bitrise TODOs Sample.xcodeproj" "-scheme" "Bitrise TODOs Sample" "CODE_SIGNING_ALLOWED=NO" "COMPILER_INDEX_STORE_ENABLE=NO"
+      - name: Attach Bitrise Xcelerate xcodebuild logs
+        uses: actions/upload-artifact@v6
+        with:
+          name: bitrise-xcelerate-xcodebuild-logs
+          path: '~/.local/state/xcelerate/logs'
+          retention-days: 7
+        
   # build:
   #   name: Build and Test default scheme using any available iPhone simulator
   #   runs-on: macos-latest
